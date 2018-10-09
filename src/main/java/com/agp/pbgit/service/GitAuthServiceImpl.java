@@ -54,9 +54,10 @@ public class GitAuthServiceImpl {
         Response response = httpClient.newCall(request).execute();
 
         if (response.code() == 200) {
+        	System.out.print("GIT auth token access response code "+ response.code());
             try {
                 String oAuthToken = response.body().string();
-                System.out.println(oAuthToken);
+                System.out.println("AuthToken : "+oAuthToken);
                 authDataRepository.saveAndFlush(new AuthData(new Random().nextLong(), oAuthToken));
 
             } catch (Exception e){
