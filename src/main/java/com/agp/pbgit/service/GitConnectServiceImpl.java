@@ -6,6 +6,9 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -26,7 +29,7 @@ public class GitConnectServiceImpl {
     @Value("${client_id}")
     private String clientId;
 
-
+    private Logger logger = LoggerFactory.getLogger(GitConnectServiceImpl.class);
 
     @RequestMapping("/connect")
     public RedirectView connect() throws IOException{
@@ -41,18 +44,23 @@ public class GitConnectServiceImpl {
         Request request = new Request.Builder()
                 .url(ghURL)
                 .build();
-
-        Response response = httpClient.newCall(request).execute();
-
-
+        
+        logger.info("sending GET request to "+ghURL.toString());
+        
+        
         RedirectView redirectView = new RedirectView();
-        redirectView.setUrl(request.url().toString());
+        try {
+        	Response response = httpClient.newCall(request).execute();
+        	if (response.code() == 200) {
+        		logger.info("redirecting to "+request.url());
+        		redirectView.setUrl(request.url().toString());
+        	}
+        } catch(Exception e) {
+        	logger.error(e.getMessage());
+        }
+           
         return  redirectView;
 
     }
 
-    @RequestMapping("/callback")
-    public void callback(@RequestParam(value="code") String authCode) {
-
-    }
 }

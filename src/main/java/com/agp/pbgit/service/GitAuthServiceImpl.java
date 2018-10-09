@@ -3,6 +3,9 @@ package com.agp.pbgit.service;
 import com.agp.pbgit.model.db.AuthData;
 import com.agp.pbgit.service.db.AuthDataRepository;
 import okhttp3.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +28,8 @@ public class GitAuthServiceImpl {
     private String clientSecret;
 
     private AuthDataRepository authDataRepository;
-
+    
+    private final Logger logger = LoggerFactory.getLogger(GitAuthServiceImpl.class);
     @Autowired
     public GitAuthServiceImpl(AuthDataRepository authDataRepository) {
         this.authDataRepository = authDataRepository;
@@ -52,16 +56,17 @@ public class GitAuthServiceImpl {
                 .build();
 
         Response response = httpClient.newCall(request).execute();
-
+        
+        logger.info("POST "+ghURL.toString()+" returned resonse code "+response.code());
+        
         if (response.code() == 200) {
-        	System.out.print("GIT auth token access response code "+ response.code());
             try {
                 String oAuthToken = response.body().string();
-                System.out.println("AuthToken : "+oAuthToken);
+                logger.info("Recieved GitHub OAuth token "+oAuthToken);
                 authDataRepository.saveAndFlush(new AuthData(new Random().nextLong(), oAuthToken));
 
             } catch (Exception e){
-                e.printStackTrace();
+                logger.error(e.getMessage());
             } finally {
                 response.body().close();
             }
