@@ -43,6 +43,9 @@ Thumbs.db
 *.classpath
 *.project
 *.eclipse
+.vscode
+.vascode/*
+.settings
 /target/*
 
 #ignore application.properties file for security reasons#

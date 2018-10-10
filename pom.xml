@@ -6,7 +6,7 @@
 	<groupId>com.agp</groupId>
 	<artifactId>pbgit</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<name>pbgit</name>
 	<description>Demo project for Spring Boot</description>
@@ -50,6 +50,7 @@
 		 <dependency>
  			<groupId>com.h2database</groupId>
  			<artifactId>h2</artifactId>
+			 <scope>runtime</scope>
  		</dependency>
 		
 	</dependencies>
