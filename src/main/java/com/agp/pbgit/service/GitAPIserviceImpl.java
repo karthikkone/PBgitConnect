@@ -9,6 +9,7 @@ import com.agp.pbgit.model.RepoModel;
 import com.agp.pbgit.model.db.AuthData;
 import com.agp.pbgit.service.db.AuthDataRepository;
 
+import org.kohsuke.github.GHCreateRepositoryBuilder;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 import org.slf4j.Logger;
@@ -67,7 +68,9 @@ public class GitAPIserviceImpl implements GitAPIservice{
             String repoName = (String)payload.get("repo_name");
             AuthData ghAuthToken = authDataRepository.findAll().get(0);
             GitHub github = GitHub.connectUsingOAuth(ghAuthToken.getAuthToken());
-            github.createRepository(repoName);
+            GHCreateRepositoryBuilder repositoryBuilder = github.createRepository(repoName);
+            repositoryBuilder.autoInit(true)
+                    .create();
         }
     }
 }
