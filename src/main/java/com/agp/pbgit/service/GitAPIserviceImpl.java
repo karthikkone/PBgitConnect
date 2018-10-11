@@ -11,11 +11,13 @@ import com.agp.pbgit.service.db.AuthDataRepository;
 
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 /**
@@ -25,20 +27,25 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class GitAPIserviceImpl implements GitAPIservice{
     private String ghAuthToken;
     private AuthDataRepository authDataRepository;
-    
+    private final Logger logger = LoggerFactory.getLogger(GitAPIserviceImpl.class);
+
     @Autowired
     public GitAPIserviceImpl(AuthDataRepository authDataRepository) {
         this.authDataRepository = authDataRepository;
     }
     
     
-    @RequestMapping(value="/repos", method=RequestMethod.GET)
-    public List<RepoModel> requestMethodName() throws IOException {
+    @RequestMapping(value="/{user}/repos", method=RequestMethod.GET)
+    public List<RepoModel> requestMethodName(@PathVariable("user") String ghUser) throws IOException {
     	
     	//get stored Auth token
     	AuthData ghAuthToken = authDataRepository.findAll().get(0);
+
+    	logger.info("using token with GitHub" + ghAuthToken);
+
+    	//access github api with the token
         GitHub github = GitHub.connectUsingOAuth(ghAuthToken.getAuthToken());
-        Map<String, GHRepository> reps = github.getMyself().getAllRepositories();
+        Map<String, GHRepository> reps = github.getUser(ghUser).getRepositories();
         List<RepoModel> repoData = new LinkedList<RepoModel>();
         
         for (GHRepository repo : reps.values()) {

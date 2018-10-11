@@ -22,13 +22,13 @@ import java.util.Random;
 @RestController
 public class GitAuthServiceImpl implements GitAuthService{
 
-    @Value("${client_id}")
+    @Value("${github.client_id}")
     private String clientId;
 
     @Value("${github.oauth.url}")
     private String gitOAuthUrl;
 
-    @Value("${client_secret}")
+    @Value("${github.client_secret}")
     private String clientSecret;
 
     private AuthDataRepository authDataRepository;

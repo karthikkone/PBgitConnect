@@ -19,7 +19,7 @@ public class GitConnectServiceImpl {
     @Value("${github.oauth.url}")
     private String gitOAuthUrl;
 
-    @Value("${client_id}")
+    @Value("${github.client_id}")
     private String clientId;
 
     private Logger logger = LoggerFactory.getLogger(GitConnectServiceImpl.class);
