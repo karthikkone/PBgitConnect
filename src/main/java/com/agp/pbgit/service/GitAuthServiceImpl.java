@@ -2,6 +2,8 @@ package com.agp.pbgit.service;
 
 import com.agp.pbgit.model.db.AuthData;
 import com.agp.pbgit.service.db.AuthDataRepository;
+import com.google.gson.Gson;
+
 import okhttp3.*;
 
 import org.slf4j.Logger;
@@ -40,7 +42,8 @@ public class GitAuthServiceImpl implements GitAuthService{
     @RequestMapping(value = "/auth/callback")
     public void getOauthToken(@RequestParam(value="code") String code) throws IOException {
         OkHttpClient httpClient = new OkHttpClient();
-
+        
+        
         HttpUrl ghURL = HttpUrl.parse(gitOAuthUrl).newBuilder()
                 .addPathSegment("access_token")
                 .build();
@@ -52,6 +55,7 @@ public class GitAuthServiceImpl implements GitAuthService{
                 .build();
 
         Request request = new Request.Builder()
+        		.header("Accept", "application/json")
                 .url(ghURL)
                 .post(formBody)
                 .build();
@@ -62,9 +66,13 @@ public class GitAuthServiceImpl implements GitAuthService{
         
         if (response.code() == 200) {
             try {
-                String oAuthToken = response.body().string();
-                logger.info("Recieved GitHub OAuth token "+oAuthToken);
-                authDataRepository.saveAndFlush(new AuthData(new Random().nextLong(), oAuthToken));
+            	
+                String resp = response.body().string();
+                Gson gson = new Gson();
+                logger.info("Recieved GitHub OAuth token "+resp);
+                
+                AuthData authData = (AuthData)gson.fromJson(resp, AuthData.class);
+                authDataRepository.saveAndFlush(new AuthData());
 
                 List<AuthData> tokens = authDataRepository.findAll();
                 logger.info("Currently stored tokens"+tokens);

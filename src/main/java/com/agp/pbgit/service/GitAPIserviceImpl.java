@@ -35,7 +35,7 @@ public class GitAPIserviceImpl implements GitAPIservice{
     public List<RepoModel> requestMethodName() throws IOException {
     	
     	//get stored Auth token
-    	this.ghAuthToken = authDataRepository.findAll().get(0).getOauthToken();
+    	this.ghAuthToken = authDataRepository.findAll().get(0).getAuthToken();
         GitHub github = GitHub.connectUsingOAuth(ghAuthToken);
         Map<String, GHRepository> reps = github.getMyself().getAllRepositories();
         List<RepoModel> repoData = new LinkedList<RepoModel>();
