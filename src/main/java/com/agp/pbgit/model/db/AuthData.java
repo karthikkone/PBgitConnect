@@ -1,16 +1,28 @@
 package com.agp.pbgit.model.db;
 
 
+import com.google.gson.annotations.Expose;
+
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
 public class AuthData {
 
+	//exclude Id field from JSON serialization
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+
+	@Expose
     private String authToken;
-	
+
+	@Expose
 	private String scope;
+
+	@Expose
 	private String tokenType;
 	
     public AuthData() {

@@ -4,13 +4,13 @@ import com.agp.pbgit.model.db.AuthData;
 import com.agp.pbgit.service.db.AuthDataRepository;
 import com.google.gson.Gson;
 
+import com.google.gson.GsonBuilder;
 import okhttp3.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -68,10 +68,10 @@ public class GitAuthServiceImpl implements GitAuthService{
             try {
             	
                 String resp = response.body().string();
-                Gson gson = new Gson();
+                Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
                 logger.info("Recieved GitHub OAuth token "+resp);
                 
-                AuthData authData = (AuthData)gson.fromJson(resp, AuthData.class);
+                AuthData authData = gson.fromJson(resp, AuthData.class);
                 authDataRepository.saveAndFlush(authData);
 
                 List<AuthData> tokens = authDataRepository.findAll();
