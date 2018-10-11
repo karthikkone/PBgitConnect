@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 import com.agp.pbgit.model.RepoModel;
+import com.agp.pbgit.model.db.AuthData;
 import com.agp.pbgit.service.db.AuthDataRepository;
 
 import org.kohsuke.github.GHRepository;
@@ -27,7 +28,7 @@ public class GitAPIserviceImpl implements GitAPIservice{
     
     @Autowired
     public GitAPIserviceImpl(AuthDataRepository authDataRepository) {
-        
+        this.authDataRepository = authDataRepository;
     }
     
     
@@ -35,8 +36,8 @@ public class GitAPIserviceImpl implements GitAPIservice{
     public List<RepoModel> requestMethodName() throws IOException {
     	
     	//get stored Auth token
-    	this.ghAuthToken = authDataRepository.findAll().get(0).getAuthToken();
-        GitHub github = GitHub.connectUsingOAuth(ghAuthToken);
+    	AuthData ghAuthToken = authDataRepository.findAll().get(0);
+        GitHub github = GitHub.connectUsingOAuth(ghAuthToken.getAuthToken());
         Map<String, GHRepository> reps = github.getMyself().getAllRepositories();
         List<RepoModel> repoData = new LinkedList<RepoModel>();
         
