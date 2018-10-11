@@ -41,7 +41,7 @@ public class ResponseModel {
 
     @Override
     public String toString() {
-        String authtoken = (this.authCode == null ? "-" : this.authCodes);
+        String authtoken = (this.authCode == null ? "-" : this.authCode);
         return "ResponseModel{" +
                 "httpStatus=" + httpStatus +
                 ", message='" + message + '\'' +
