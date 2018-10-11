@@ -30,8 +30,9 @@ public class GitAPIserviceImpl implements GitAPIservice{
         
     }
     
+    
     @RequestMapping(value="/repos", method=RequestMethod.GET)
-    public List<RepoModel> requestMethodName(@RequestParam String param) throws IOException {
+    public List<RepoModel> requestMethodName() throws IOException {
     	
     	//get stored Auth token
     	this.ghAuthToken = authDataRepository.findAll().get(0).getOauthToken();
