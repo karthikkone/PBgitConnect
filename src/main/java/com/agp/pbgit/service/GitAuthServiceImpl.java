@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.Random;
 
 @RestController
-public class GitAuthServiceImpl {
+public class GitAuthServiceImpl implements GitAuthService{
 
     @Value("${client_id}")
     private String clientId;
@@ -37,8 +38,7 @@ public class GitAuthServiceImpl {
     }
 
     @RequestMapping(value = "/auth/callback")
-    public void getAuthToken(@RequestParam(value="code") String code) throws IOException {
-
+    public void getOauthToken(@RequestParam(value="code") String code) throws IOException {
         OkHttpClient httpClient = new OkHttpClient();
 
         HttpUrl ghURL = HttpUrl.parse(gitOAuthUrl).newBuilder()
@@ -73,6 +73,7 @@ public class GitAuthServiceImpl {
                 logger.error(e.getMessage());
             } finally {
                 response.body().close();
+                response.close();
             }
         }
 
