@@ -72,7 +72,7 @@ public class GitAuthServiceImpl implements GitAuthService{
                 logger.info("Recieved GitHub OAuth token "+resp);
                 
                 AuthData authData = (AuthData)gson.fromJson(resp, AuthData.class);
-                authDataRepository.saveAndFlush(new AuthData());
+                authDataRepository.saveAndFlush(authData);
 
                 List<AuthData> tokens = authDataRepository.findAll();
                 logger.info("Currently stored tokens"+tokens);
