@@ -14,10 +14,7 @@ import org.kohsuke.github.GitHub;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 
 /**
@@ -36,7 +33,7 @@ public class GitAPIserviceImpl implements GitAPIservice{
     
     
     @RequestMapping(value="/{user}/repos", method=RequestMethod.GET)
-    public List<RepoModel> requestMethodName(@PathVariable("user") String ghUser) throws IOException {
+    public List<RepoModel> listRepository(@PathVariable("user") String ghUser) throws IOException {
     	
     	//get stored Auth token
     	AuthData ghAuthToken = authDataRepository.findAll().get(0);
@@ -61,5 +58,16 @@ public class GitAPIserviceImpl implements GitAPIservice{
         }
         return repoData;
     }
-    
+
+
+    @RequestMapping(value={"/repos/create"}, method = RequestMethod.POST)
+    public void createRepository(@RequestBody Map<String, Object> payload) throws IOException{
+        if (payload != null) {
+
+            String repoName = (String)payload.get("repo_name");
+            AuthData ghAuthToken = authDataRepository.findAll().get(0);
+            GitHub github = GitHub.connectUsingOAuth(ghAuthToken.getAuthToken());
+            github.createRepository(repoName);
+        }
+    }
 }
