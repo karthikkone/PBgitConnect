@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 
 @RestController
@@ -64,6 +65,9 @@ public class GitAuthServiceImpl {
                 String oAuthToken = response.body().string();
                 logger.info("Recieved GitHub OAuth token "+oAuthToken);
                 authDataRepository.saveAndFlush(new AuthData(new Random().nextLong(), oAuthToken));
+
+                List<AuthData> tokens = authDataRepository.findAll();
+                logger.info("Currently stored tokens"+tokens);
 
             } catch (Exception e){
                 logger.error(e.getMessage());
