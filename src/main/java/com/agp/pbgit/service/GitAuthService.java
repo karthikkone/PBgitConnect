@@ -1,7 +1,9 @@
 package com.agp.pbgit.service;
 
+import com.agp.pbgit.model.ResponseModel;
+
 import java.io.IOException;
 
 public interface GitAuthService {
-    void getOauthToken(String code) throws IOException;
+    ResponseModel getOauthToken(String code) throws IOException;
 }

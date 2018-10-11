@@ -1,5 +1,6 @@
 package com.agp.pbgit.service;
 
+import com.agp.pbgit.model.ResponseModel;
 import com.agp.pbgit.model.db.AuthData;
 import com.agp.pbgit.service.db.AuthDataRepository;
 import com.google.gson.Gson;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Random;
 
 @RestController
 public class GitAuthServiceImpl implements GitAuthService{
@@ -39,11 +39,10 @@ public class GitAuthServiceImpl implements GitAuthService{
         this.authDataRepository = authDataRepository;
     }
 
-    @RequestMapping(value = "/auth/callback")
-    public void getOauthToken(@RequestParam(value="code") String code) throws IOException {
+    @RequestMapping(value = "/auth/callback", produces="application/json")
+    public ResponseModel getOauthToken(@RequestParam(value="code") String code) throws IOException {
         OkHttpClient httpClient = new OkHttpClient();
-        
-        
+
         HttpUrl ghURL = HttpUrl.parse(gitOAuthUrl).newBuilder()
                 .addPathSegment("access_token")
                 .build();
@@ -61,9 +60,12 @@ public class GitAuthServiceImpl implements GitAuthService{
                 .build();
 
         Response response = httpClient.newCall(request).execute();
-        
+
+        ResponseModel apiResponse = new ResponseModel();
+
         logger.info("POST "+ghURL.toString()+" returned resonse code "+response.code());
-        
+
+
         if (response.code() == 200) {
             try {
             	
@@ -74,17 +76,27 @@ public class GitAuthServiceImpl implements GitAuthService{
                 AuthData authData = gson.fromJson(resp, AuthData.class);
                 authDataRepository.saveAndFlush(authData);
 
-                List<AuthData> tokens = authDataRepository.findAll();
-                logger.info("Currently stored tokens"+tokens);
+                //indeed received auth token success
+                if (authData != null && authData.getAuthToken() != null) {
+                    apiResponse.setHttpStatus(200);
+                    apiResponse.setMessage("Authorized by GitHub");
+                }
 
             } catch (Exception e){
                 logger.error(e.getMessage());
+                apiResponse.setHttpStatus(401);
+                apiResponse.setMessage("Not Authorized by GitHUb");
             } finally {
                 response.body().close();
                 response.close();
             }
+        } else {
+            apiResponse.setHttpStatus(404);
+            apiResponse.setMessage("GitHub not reachable");
         }
 
+
+        return apiResponse;
     }
 
 }
