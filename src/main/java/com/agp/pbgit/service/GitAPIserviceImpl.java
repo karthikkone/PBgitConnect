@@ -61,16 +61,16 @@ public class GitAPIserviceImpl implements GitAPIservice{
     }
 
 
-    @RequestMapping(value={"/repos/create"}, method = RequestMethod.POST)
-    public void createRepository(@RequestBody Map<String, Object> payload) throws IOException{
+    @RequestMapping(value={"/{user}/repos/create"}, method = RequestMethod.POST)
+    public void createRepository(@PathVariable String ghUser, @RequestBody Map<String, Object> payload) throws IOException{
         if (payload != null) {
 
             String repoName = (String)payload.get("repo_name");
             AuthData ghAuthToken = authDataRepository.findAll().get(0);
             GitHub github = GitHub.connectUsingOAuth(ghAuthToken.getAuthToken());
-            GHCreateRepositoryBuilder repositoryBuilder = github.createRepository(repoName);
-            repositoryBuilder.autoInit(true)
-                    .create();
+            GHCreateRepositoryBuilder repositoryBuilder = github.createRepository(ghUser+"/"+repoName);
+            repositoryBuilder.autoInit(true);
+            repositoryBuilder.create();
         }
     }
 }
