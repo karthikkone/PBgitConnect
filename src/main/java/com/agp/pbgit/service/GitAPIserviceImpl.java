@@ -62,7 +62,7 @@ public class GitAPIserviceImpl implements GitAPIservice{
 
 
     @RequestMapping(value={"/{user}/repos/create"}, method = RequestMethod.POST)
-    public void createRepository(@PathVariable String ghUser, @RequestBody Map<String, Object> payload) throws IOException{
+    public void createRepository(@PathVariable("user") String ghUser, @RequestBody Map<String, Object> payload) throws IOException{
         if (payload != null) {
 
             String repoName = (String)payload.get("repo_name");
