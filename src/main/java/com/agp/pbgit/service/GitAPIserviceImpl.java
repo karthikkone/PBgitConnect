@@ -1,20 +1,25 @@
 package com.agp.pbgit.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.io.IOException;
 import java.util.LinkedList;
 
 import com.agp.pbgit.model.RepoModel;
+import com.agp.pbgit.model.RevisionModel;
 import com.agp.pbgit.model.db.AuthData;
 import com.agp.pbgit.service.db.AuthDataRepository;
 
 import org.kohsuke.github.GHCreateRepositoryBuilder;
+import org.kohsuke.github.GHRef;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -61,16 +66,25 @@ public class GitAPIserviceImpl implements GitAPIservice{
     }
 
 
-    @RequestMapping(value={"/{user}/repos/create"}, method = RequestMethod.POST)
-    public void createRepository(@PathVariable("user") String ghUser, @RequestBody Map<String, Object> payload) throws IOException{
-        if (payload != null) {
+    @RequestMapping(value="/{owner}/repos/{repository}/refs/heads", method = RequestMethod.GET)
+    public ResponseEntity<List<RevisionModel>> getRevisions(@PathVariable("owner") String owner, @PathVariable("repository") String repository) throws IOException{
+        AuthData authData = authDataRepository.findAll().get(0);
 
-            String repoName = (String)payload.get("repo_name");
-            AuthData ghAuthToken = authDataRepository.findAll().get(0);
-            GitHub github = GitHub.connectUsingOAuth(ghAuthToken.getAuthToken());
-            GHCreateRepositoryBuilder repositoryBuilder = github.createRepository(ghUser+"/"+repoName);
-            repositoryBuilder.autoInit(true);
-            repositoryBuilder.create();
+        logger.info("fetching revisions for "+owner+"/"+repository);
+
+        GitHub gitHub = GitHub.connectUsingOAuth(authData.getAuthToken());
+        GHRef[] refs = gitHub.getUser(owner).getRepository(repository).getRefs();
+
+        List<RevisionModel> revisions = new ArrayList<RevisionModel>();
+
+        for (GHRef ref : refs) {
+            if (ref != null && ref.getObject() != null) {
+                GHRef.GHObject refObj = ref.getObject();
+                revisions.add(new RevisionModel(refObj.getType(),refObj.getUrl(), refObj.getSha()));
+            }
         }
+
+        return new ResponseEntity<List<RevisionModel>>(revisions, HttpStatus.OK);
     }
+
 }
