@@ -1,6 +1,7 @@
 package com.agp.pbgit.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.io.IOException;
@@ -10,6 +11,16 @@ import com.agp.pbgit.model.RepoModel;
 import com.agp.pbgit.model.RevisionModel;
 import com.agp.pbgit.model.db.AuthData;
 import com.agp.pbgit.service.db.AuthDataRepository;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonWriter;
+
+import okhttp3.FormBody;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import org.kohsuke.github.*;
 import org.slf4j.Logger;
@@ -94,12 +105,48 @@ public class GitAPIserviceImpl implements GitAPIservice {
         logger.info("creating a branch @SHA-1 : " + sha + "/" + branch + " on repository " + owner + "/" + repository);
         GitHub gitHub = GitHub.connectUsingOAuth(authData.getAuthToken());
         GHRef[] refs = gitHub.getUser(owner).getRepository(repository).getRefs();
-
+        GHBranch ghBranch = new GHBranch();
+       
         boolean ok = false;
 
         for (GHRef ghRef : refs) {
             if (ghRef != null && ghRef.getObject() != null && ghRef.getObject().getSha().equals(sha)) {
                 ok = true; //found the ref from where to spin off a branch
+                
+                OkHttpClient httpClient = new OkHttpClient();
+                
+                //api.github.com/repos/:author/:repository/git/refs
+                HttpUrl ghURL = HttpUrl.parse(gitHub.getApiUrl()).newBuilder()
+                        .addPathSegment("repos")
+                        .addPathSegment(owner)
+                        .addPathSegment(repository)
+                        .addPathSegment("git")
+                        .addPathSegment("refs")
+                        .build();
+                
+               Map<String, String> branchData = new HashMap<String, String>();
+               branchData.put("ref", "refs/heads/"+branch);
+               branchData.put("sha", sha); //hash to branch from
+               
+               Gson gson = new GsonBuilder()
+            		   .setPrettyPrinting().create();
+               String branchPayload = gson.toJson(branchData);
+               
+               okhttp3.RequestBody body = okhttp3.RequestBody.create(
+            		   MediaType.parse("application/json; charset=utf-8"),branchPayload);
+               
+               Request request = new Request.Builder()
+               		.header("Accept", "application/json")
+               		.header("Authorization","token "+authData.getAuthToken())
+                       .url(ghURL)
+                       .post(body)
+                       .build();
+               
+               Response response = httpClient.newCall(request).execute();
+               
+               if (response.code() != 200) ok=false;
+               response.close();
+               
             }
         }
 
