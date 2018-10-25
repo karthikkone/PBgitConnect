@@ -142,8 +142,10 @@ public class GitAPIserviceImpl implements GitAPIservice {
                        .post(body)
                        .build();
                
+               logger.info("posting "+branchPayload+" to "+ghURL);
                Response response = httpClient.newCall(request).execute();
                
+               logger.info("POST "+ghURL+" returned status "+response.code());
                if (response.code() != 200) ok=false;
                response.close();
                
