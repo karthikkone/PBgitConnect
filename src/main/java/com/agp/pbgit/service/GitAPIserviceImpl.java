@@ -137,7 +137,7 @@ public class GitAPIserviceImpl implements GitAPIservice {
                
                Request request = new Request.Builder()
                		.header("Accept", "application/json")
-               		.header("Authorization","token "+authData.getAuthToken())
+               		.header("Authorization", authData.getAuthToken())
                        .url(ghURL)
                        .post(body)
                        .build();
@@ -146,7 +146,9 @@ public class GitAPIserviceImpl implements GitAPIservice {
                Response response = httpClient.newCall(request).execute();
                
                logger.info("POST "+ghURL+" returned status "+response.code());
-               if (response.code() != 200) ok=false;
+               
+               //github must return http Created 201
+               if (response.code() != 201) ok=false;
                response.close();
                
             }
