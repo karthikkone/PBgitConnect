@@ -135,6 +135,7 @@ public class GitAPIserviceImpl implements GitAPIservice {
                okhttp3.RequestBody body = okhttp3.RequestBody.create(
             		   MediaType.parse("application/json; charset=utf-8"),branchPayload);
                
+               logger.info("using auth token "+authData.getAuthToken());
                Request request = new Request.Builder()
                		.header("Accept", "application/json")
                		.header("Authorization", authData.getAuthToken())
