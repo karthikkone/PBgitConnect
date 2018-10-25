@@ -101,12 +101,11 @@ public class GitAPIserviceImpl implements GitAPIservice {
         AuthData authData = authDataRepository.findAll().get(0);
         String sha = (String) payload.get("sha1");
         String branch = (String) payload.get("branch");
-
+        
+        logger.info("using auth token "+authData.getAuthToken());
         logger.info("creating a branch @SHA-1 : " + sha + "/" + branch + " on repository " + owner + "/" + repository);
         GitHub gitHub = GitHub.connectUsingOAuth(authData.getAuthToken());
         GHRef[] refs = gitHub.getUser(owner).getRepository(repository).getRefs();
-        GHBranch ghBranch = new GHBranch();
-       
         boolean ok = false;
 
         for (GHRef ghRef : refs) {
@@ -135,7 +134,7 @@ public class GitAPIserviceImpl implements GitAPIservice {
                okhttp3.RequestBody body = okhttp3.RequestBody.create(
             		   MediaType.parse("application/json; charset=utf-8"),branchPayload);
                
-               logger.info("using auth token "+authData.getAuthToken());
+               
                Request request = new Request.Builder()
                		.header("Accept", "application/json")
                		.header("Authorization", authData.getAuthToken())
