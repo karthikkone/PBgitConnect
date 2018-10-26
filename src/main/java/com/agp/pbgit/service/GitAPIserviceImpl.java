@@ -98,7 +98,7 @@ public class GitAPIserviceImpl implements GitAPIservice {
 
     @RequestMapping(value = "/{owner}/repos/{repository}/refs/heads", method = RequestMethod.POST)
     public ResponseEntity<String> createBranch(@PathVariable("owner") String owner, @PathVariable("repository") String repository, @RequestBody Map<String, Object> payload) throws  IOException {
-        AuthData authData = authDataRepository.findAll().get(0);
+        AuthData authData = authDataRepository.findAll().iterator().next();
         String sha = (String) payload.get("sha1");
         String branch = (String) payload.get("branch");
         
