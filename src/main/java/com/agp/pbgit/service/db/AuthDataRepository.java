@@ -9,5 +9,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AuthDataRepository extends CrudRepository<AuthData, Long>{
-	List<AuthData> findAll();
 }
