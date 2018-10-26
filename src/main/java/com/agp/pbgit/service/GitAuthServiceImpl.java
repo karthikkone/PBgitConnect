@@ -74,7 +74,7 @@ public class GitAuthServiceImpl implements GitAuthService{
                 logger.info("Recieved GitHub OAuth token "+resp);
                 
                 AuthData authData = gson.fromJson(resp, AuthData.class);
-                authDataRepository.save(authData);
+                authDataRepository.saveAndFlush(authData);
 
                 //indeed received auth token success
                 if (authData != null && authData.getAuthToken() != null) {

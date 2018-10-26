@@ -50,7 +50,7 @@ public class GitAPIserviceImpl implements GitAPIservice {
     public List<RepoModel> listRepository(@PathVariable("user") String ghUser) throws IOException {
 
         //get stored Auth token
-        AuthData ghAuthToken = authDataRepository.findAll().iterator().next();
+        AuthData ghAuthToken = authDataRepository.findAll().get(0);
 
         logger.info("using token with GitHub" + ghAuthToken);
 
@@ -76,7 +76,7 @@ public class GitAPIserviceImpl implements GitAPIservice {
 
     @RequestMapping(value = "/{owner}/repos/{repository}/refs/heads", method = RequestMethod.GET)
     public ResponseEntity<List<RevisionModel>> getRevisions(@PathVariable("owner") String owner, @PathVariable("repository") String repository) throws IOException {
-        AuthData authData = authDataRepository.findAll().iterator().next();
+        AuthData authData = authDataRepository.findAll().get(0);
 
         logger.info("fetching revisions for " + owner + "/" + repository);
 
@@ -98,7 +98,7 @@ public class GitAPIserviceImpl implements GitAPIservice {
 
     @RequestMapping(value = "/{owner}/repos/{repository}/refs/heads", method = RequestMethod.POST)
     public ResponseEntity<String> createBranch(@PathVariable("owner") String owner, @PathVariable("repository") String repository, @RequestBody Map<String, Object> payload) throws  IOException {
-        AuthData authData = authDataRepository.findAll().iterator().next();
+        AuthData authData = authDataRepository.findAll().get(0);
         String sha = (String) payload.get("sha1");
         String branch = (String) payload.get("branch");
         
