@@ -13,9 +13,7 @@ import com.agp.pbgit.model.db.AuthData;
 import com.agp.pbgit.service.db.AuthDataRepository;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonWriter;
 
-import okhttp3.FormBody;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -55,7 +53,7 @@ public class GitAPIserviceImpl implements GitAPIservice {
         logger.info("using token with GitHub" + ghAuthToken);
 
         //access github api with the token
-        GitHub github = GitHub.connectUsingOAuth(ghAuthToken.getAuthToken());
+        GitHub github = GitHub.connectUsingOAuth(ghAuthToken.getAccessToken());
         Map<String, GHRepository> reps = github.getUser(ghUser).getRepositories();
         List<RepoModel> repoData = new LinkedList<RepoModel>();
 
@@ -80,7 +78,7 @@ public class GitAPIserviceImpl implements GitAPIservice {
 
         logger.info("fetching revisions for " + owner + "/" + repository);
 
-        GitHub gitHub = GitHub.connectUsingOAuth(authData.getAuthToken());
+        GitHub gitHub = GitHub.connectUsingOAuth(authData.getAccessToken());
         GHRef[] refs = gitHub.getUser(owner).getRepository(repository).getRefs();
 
         List<RevisionModel> revisions = new ArrayList<RevisionModel>();
@@ -102,9 +100,9 @@ public class GitAPIserviceImpl implements GitAPIservice {
         String sha = (String) payload.get("sha1");
         String branch = (String) payload.get("branch");
         
-        logger.info("using auth token "+authData.getAuthToken());
+        logger.info("using auth token "+authData.getAccessToken());
         logger.info("creating a branch @SHA-1 : " + sha + "/" + branch + " on repository " + owner + "/" + repository);
-        GitHub gitHub = GitHub.connectUsingOAuth(authData.getAuthToken());
+        GitHub gitHub = GitHub.connectUsingOAuth(authData.getAccessToken());
         GHRef[] refs = gitHub.getUser(owner).getRepository(repository).getRefs();
         boolean ok = false;
 
@@ -137,7 +135,7 @@ public class GitAPIserviceImpl implements GitAPIservice {
                
                Request request = new Request.Builder()
                		.header("Accept", "application/json")
-               		.header("Authorization", authData.getAuthToken())
+               		.header("Authorization", "token "+authData.getAccessToken())
                        .url(ghURL)
                        .post(body)
                        .build();

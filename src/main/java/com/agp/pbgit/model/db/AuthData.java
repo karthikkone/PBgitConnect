@@ -2,6 +2,7 @@ package com.agp.pbgit.model.db;
 
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,31 +17,31 @@ public class AuthData {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	@Expose
-    private String authToken;
+	@Expose @SerializedName("access_token")
+    private String accessToken;
 
-	@Expose
+	@Expose @SerializedName("scope")
 	private String scope;
 
-	@Expose
+	@Expose @SerializedName("token_type")
 	private String tokenType;
 	
     public AuthData() {
 
     }
 
-    public AuthData(String authToken, String scope, String tokenType) {
-        this.authToken = authToken;
+    public AuthData(String accessToken, String scope, String tokenType) {
+        this.accessToken = accessToken;
         this.scope = scope;
 		this.tokenType = tokenType;
     }
 
-	public String getAuthToken() {
-		return authToken;
+	public String getAccessToken() {
+		return accessToken;
 	}
 
-	public void setAuthToken(String authToken) {
-		this.authToken = authToken;
+	public void setAccessToken(String authToken) {
+		this.accessToken = authToken;
 	}
 
 	public String getScope() {
@@ -61,14 +62,14 @@ public class AuthData {
 
 	@Override
 	public String toString() {
-		return "AuthData [authToken=" + authToken + ", scope=" + scope + ", tokenType=" + tokenType + "]";
+		return "AuthData [accessToken=" + accessToken + ", scope=" + scope + ", tokenType=" + tokenType + "]";
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((authToken == null) ? 0 : authToken.hashCode());
+		result = prime * result + ((accessToken == null) ? 0 : accessToken.hashCode());
 		result = prime * result + ((scope == null) ? 0 : scope.hashCode());
 		result = prime * result + ((tokenType == null) ? 0 : tokenType.hashCode());
 		return result;
@@ -83,10 +84,10 @@ public class AuthData {
 		if (getClass() != obj.getClass())
 			return false;
 		AuthData other = (AuthData) obj;
-		if (authToken == null) {
-			if (other.authToken != null)
+		if (accessToken == null) {
+			if (other.accessToken != null)
 				return false;
-		} else if (!authToken.equals(other.authToken))
+		} else if (!accessToken.equals(other.accessToken))
 			return false;
 		if (scope == null) {
 			if (other.scope != null)

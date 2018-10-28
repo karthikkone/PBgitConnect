@@ -3,6 +3,7 @@ package com.agp.pbgit.service;
 import com.agp.pbgit.model.ResponseModel;
 import com.agp.pbgit.model.db.AuthData;
 import com.agp.pbgit.service.db.AuthDataRepository;
+import com.google.gson.ExclusionStrategy;
 import com.google.gson.Gson;
 
 import com.google.gson.GsonBuilder;
@@ -74,10 +75,12 @@ public class GitAuthServiceImpl implements GitAuthService{
                 logger.info("Recieved GitHub OAuth token "+resp);
                 
                 AuthData authData = gson.fromJson(resp, AuthData.class);
+
+                logger.info("parsed Authtoken data "+authData);
                 authDataRepository.saveAndFlush(authData);
 
                 //indeed received auth token success
-                if (authData != null && authData.getAuthToken() != null) {
+                if (authData != null && authData.getAccessToken() != null) {
                     apiResponse.setHttpStatus(200);
                     apiResponse.setMessage("Authorized by GitHub");
                 }
