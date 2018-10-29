@@ -2,11 +2,14 @@ package com.agp.pbgit.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.io.IOException;
 import java.util.LinkedList;
 
+import com.agp.pbgit.model.RepoBranch;
 import com.agp.pbgit.model.RepoModel;
 import com.agp.pbgit.model.RevisionModel;
 import com.agp.pbgit.model.db.AuthData;
@@ -65,7 +68,14 @@ public class GitAPIserviceImpl implements GitAPIservice {
             model.setMasterBranch(repo.getMasterBranch());
             model.setUpdatedAt(repo.getUpdatedAt());
             model.setUrl(repo.getHttpTransportUrl());
-
+            
+            Map<String, GHBranch> branches = repo.getBranches();
+            Set<RepoBranch> branchModels = new HashSet<RepoBranch>();
+            
+            for (GHBranch ghb : branches.values()) {
+            	branchModels.add(new RepoBranch(ghb.getName(),ghb.getOwner().getOwnerName(),ghb.getSHA1()));
+            }
+            model.setBranches(branchModels);
             repoData.add(model);
         }
         return repoData;

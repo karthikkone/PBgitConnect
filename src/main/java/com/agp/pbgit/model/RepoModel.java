@@ -1,6 +1,7 @@
 package com.agp.pbgit.model;
 
 import java.util.Date;
+import java.util.Set;
 
 public class RepoModel {
 	public String repoName;
@@ -9,6 +10,8 @@ public class RepoModel {
 	public Date updatedAt;
 	public String ownerName;
 	public String url;
+	
+	public Set<RepoBranch> branches;
 	
 	public RepoModel() {}
 	
@@ -71,10 +74,20 @@ public class RepoModel {
 		this.url = url;
 	}
 
+	
+	public Set<RepoBranch> getBranches() {
+		return branches;
+	}
+
+	public void setBranches(Set<RepoBranch> branches) {
+		this.branches = branches;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((branches == null) ? 0 : branches.hashCode());
 		result = prime * result + ((createdAt == null) ? 0 : createdAt.hashCode());
 		result = prime * result + ((masterBranch == null) ? 0 : masterBranch.hashCode());
 		result = prime * result + ((ownerName == null) ? 0 : ownerName.hashCode());
@@ -93,6 +106,11 @@ public class RepoModel {
 		if (getClass() != obj.getClass())
 			return false;
 		RepoModel other = (RepoModel) obj;
+		if (branches == null) {
+			if (other.branches != null)
+				return false;
+		} else if (!branches.equals(other.branches))
+			return false;
 		if (createdAt == null) {
 			if (other.createdAt != null)
 				return false;
@@ -129,8 +147,10 @@ public class RepoModel {
 	@Override
 	public String toString() {
 		return "RepoModel [repoName=" + repoName + ", masterBranch=" + masterBranch + ", createdAt=" + createdAt
-				+ ", updatedAt=" + updatedAt + ", ownerName=" + ownerName + ", url=" + url + "]";
+				+ ", updatedAt=" + updatedAt + ", ownerName=" + ownerName + ", url=" + url + ", branches=" + branches
+				+ "]";
 	}
+
 	
 	
 }
