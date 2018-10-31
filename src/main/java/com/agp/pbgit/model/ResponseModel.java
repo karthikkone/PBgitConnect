@@ -5,14 +5,16 @@ public class ResponseModel {
     private Integer httpStatus;
     private String message;
     private String authCode;
+    private String login;
 
     public ResponseModel() {
     }
 
-    public ResponseModel(Integer httpStatus, String message, String authCode) {
+    public ResponseModel(Integer httpStatus, String message, String authCode, String login) {
         this.httpStatus = httpStatus;
         this.message = message;
         this.authCode = authCode;
+        this.login = login;
     }
 
     public Integer getHttpStatus() {
@@ -39,6 +41,9 @@ public class ResponseModel {
         this.authCode = authCode;
     }
 
+    public void setLogin(String login) { this.login = login; }
+    public String getLogin() { return  this.login; }
+
     @Override
     public String toString() {
         String authtoken = (this.authCode == null ? "-" : this.authCode);
@@ -46,6 +51,7 @@ public class ResponseModel {
                 "httpStatus=" + httpStatus +
                 ", message='" + message + '\'' +
                 ", authCode='" + authtoken + '\'' +
+                ", login='" + login + '\''+
                 '}';
     }
 }

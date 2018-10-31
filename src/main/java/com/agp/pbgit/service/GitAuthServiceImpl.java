@@ -3,6 +3,7 @@ package com.agp.pbgit.service;
 import com.agp.pbgit.model.ResponseModel;
 import com.agp.pbgit.model.db.AuthData;
 import com.agp.pbgit.service.db.AuthDataRepository;
+import com.agp.pbgit.service.security.JwtService;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.Gson;
 
@@ -33,11 +34,14 @@ public class GitAuthServiceImpl implements GitAuthService{
     private String clientSecret;
 
     private AuthDataRepository authDataRepository;
+    private JwtService jwtService;
     
     private final Logger logger = LoggerFactory.getLogger(GitAuthServiceImpl.class);
+
     @Autowired
-    public GitAuthServiceImpl(AuthDataRepository authDataRepository) {
+    public GitAuthServiceImpl(AuthDataRepository authDataRepository, JwtService jwtService) {
         this.authDataRepository = authDataRepository;
+        this.jwtService = jwtService;
     }
 
     @RequestMapping(value = "/auth/callback", produces="application/json")
@@ -83,12 +87,15 @@ public class GitAuthServiceImpl implements GitAuthService{
                 if (authData != null && authData.getAccessToken() != null) {
                     apiResponse.setHttpStatus(200);
                     apiResponse.setMessage("Authorized by GitHub");
+                    //generate and send a JWT token against a successful OAuth
+                    apiResponse.setAuthCode(jwtService.tokenFor(authData.getAccessToken()));
                 }
 
             } catch (Exception e){
                 logger.error(e.getMessage());
                 apiResponse.setHttpStatus(401);
                 apiResponse.setMessage("Not Authorized by GitHUb");
+
             } finally {
                 response.body().close();
                 response.close();
