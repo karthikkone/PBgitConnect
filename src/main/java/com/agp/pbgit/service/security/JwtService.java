@@ -22,7 +22,7 @@ public class JwtService {
     @Value("jwt.issuer")
     private String issuer;
 
-    @Value("jwt.expire_hours")
+    @Value("#{T(java.lang.Long).parseLong('${jwt.expire_hours}')}")
     private Long expireHours;
 
     public String tokenFor(String userprofile) throws IOException {
